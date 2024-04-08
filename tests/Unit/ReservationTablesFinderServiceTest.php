@@ -13,6 +13,7 @@ class ReservationTablesFinderServiceTest extends TestCase
 {
     public function testFindTablesForReservation_ReturnsCorrectTable()
     {
+        // Mock service
         $service = Mockery::mock(ReservationTablesFinderService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $service->shouldReceive('getAvailableTables')
                 ->once()
@@ -30,12 +31,12 @@ class ReservationTablesFinderServiceTest extends TestCase
         $result = $service->findTablesForReservation($clients, $dateTime, $restaurantId);
 
         // Assert the result
-        // Expecting table with id 2 to be selected since it can accommodate all clients in one go
         $this->assertEquals([1], $result);
     }
 
     public function testFindTablesForReservation_ReturnsCorrectTables()
     {
+        // Mock service
         $service = Mockery::mock(ReservationTablesFinderService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $service->shouldReceive('getAvailableTables')
                 ->once()
@@ -45,7 +46,7 @@ class ReservationTablesFinderServiceTest extends TestCase
                 ]));
 
         // Mock data
-        $clients = [1, 2, 3, 4, 5, 6, 7, 8]; // 4 clients + reserver
+        $clients = [1, 2, 3, 4, 5, 6, 7, 8];
         $dateTime = Carbon::now();
         $restaurantId = 1;
 
@@ -53,12 +54,12 @@ class ReservationTablesFinderServiceTest extends TestCase
         $result = $service->findTablesForReservation($clients, $dateTime, $restaurantId);
 
         // Assert the result
-        // Expecting table with id 2 to be selected since it can accommodate all clients in one go
         $this->assertEquals([2, 1], $result);
     }
 
     public function testFindTablesForReservation_ReturnsNotFoundTables()
     {
+        // Mock service
         $service = Mockery::mock(ReservationTablesFinderService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $service->shouldReceive('getAvailableTables')
                 ->once()
@@ -67,7 +68,7 @@ class ReservationTablesFinderServiceTest extends TestCase
                 ]));
 
         // Mock data
-        $clients = [1, 2, 3, 4, 5, 6, 7, 8]; // 4 clients + reserver
+        $clients = [1, 2, 3, 4, 5, 6, 7, 8];
         $dateTime = Carbon::now();
         $restaurantId = 1;
 
@@ -75,7 +76,6 @@ class ReservationTablesFinderServiceTest extends TestCase
         $result = $service->findTablesForReservation($clients, $dateTime, $restaurantId);
 
         // Assert the result
-        // Expecting table with id 2 to be selected since it can accommodate all clients in one go
         $this->assertEmpty($result);
     }
 }

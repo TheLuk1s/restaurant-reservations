@@ -9,7 +9,7 @@ use App\Dto\ClientDto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 
-class ClientCreationTest extends TestCase
+class ClientCreationServiceTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -21,39 +21,47 @@ class ClientCreationTest extends TestCase
 
     public function testCreateClient_SingleClientCreatedSuccessfully()
     {
+        // Mock service
         $mockedClient = Mockery::mock(Client::class);
         $mockedClient->shouldReceive('firstOrCreate')->andReturnUsing(function ($attributes) {
             return new Client($attributes);
         });
+
         $this->app->instance(Client::class, $mockedClient);
 
+        // Mock data
         $clientDto = new ClientDto('John Doe', 'john@example.com', '123456789');
         $service = new ClientCreationService();
+
+        // Call the method being tested
         $clientId = $service->createClient($clientDto);
 
+        // Assert the result
         $this->assertNotNull($clientId);
     }
 
     public function testCreateClient_MultipleClientsCreatedSuccessfully()
     {
-        // Mock the Client model
+        // Mock service
         $mockedClient = Mockery::mock(Client::class);
         $mockedClient->shouldReceive('firstOrCreate')->andReturnUsing(function ($attributes) {
             return new Client($attributes);
         });
+
         $this->app->instance(Client::class, $mockedClient);
 
-        // Prepare client data
+        // Mock data
         $clients = [
             new ClientDto('John Doe', 'john@example.com', '123456789'),
             new ClientDto('Jane Doe', 'jane@example.com', '987654321'),
         ];
 
-        // Create clients
         $service = new ClientCreationService();
+
+        // Call the method being tested
         $clientIds = $service->createClients($clients);
 
-        // Assert that the number of created clients matches
+        // Assert the result
         $this->assertCount(2, $clientIds);
     }
 }
