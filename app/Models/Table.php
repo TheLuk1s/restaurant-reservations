@@ -9,6 +9,11 @@ class Table extends Model
 {
     use HasFactory;
 
+    public static $validationRules = [
+        'restaurant_id' => 'required|exists:restaurants,id',
+        'capacity' => 'required|integer',
+    ];
+
     protected $fillable = ['restaurant_id', 'capacity'];
 
     public function restaurant()

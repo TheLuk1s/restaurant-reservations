@@ -9,6 +9,10 @@ class Restaurant extends Model
 {
     use HasFactory;
 
+    public static $validationRules = [
+        'name' => 'required|string|max:255'
+    ];
+
     protected $fillable = ['name'];
 
     public function tables()
