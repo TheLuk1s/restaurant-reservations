@@ -30,5 +30,5 @@ Route::controller(RestaurantReservationController::class)->group(function () {
     Route::get('restaurants/{restaurant}/reservations', 'index');
     Route::get('restaurants/{restaurant}/reservations/{reservation}', 'show');
     Route::post('restaurants/{restaurant}/reservations', 'store');
-    Route::delete('restaurants/{restaurant}/reservations/{table}', 'destroy');
+    Route::delete('restaurants/{restaurant}/reservations/{reservation}', 'destroy');
 });
