@@ -45,10 +45,9 @@ class ReservationCreationService implements ReservationCreationServiceInterface
                 $reservation->reserverPhone
             );
 
-            $reserverId = $this->clientCreationService->createClient($reserver, $restaurantId);
+            $reserverId = $this->clientCreationService->createClient($reserver);
             $reservationClientIds = $this->clientCreationService->createClients(
-                $reservation->clients,
-                $restaurantId
+                $reservation->clients
             );
 
             $reservation = $restaurant->reservations()->create([
