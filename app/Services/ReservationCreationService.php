@@ -1,28 +1,39 @@
 <?php
 
-
 namespace App\Services;
 
-use App\Models\Reservation;
+use Carbon\Carbon;
+use App\Dto\ClientDto;
 use App\Models\Restaurant;
 use App\Dto\ReservationDto;
-use App\Dto\ClientDto;
-use Carbon\Carbon;
-use App\Services\ReservationTablesFinderService;
+use App\Interfaces\ClientCreationServiceInterface;
+use App\Interfaces\ReservationCreationServiceInterface;
+use App\Interfaces\ReservationTablesFinderServiceInterface;
 
-class ReservationCreationService
+class ReservationCreationService implements ReservationCreationServiceInterface
 {
+    protected $clientCreationService;
+    protected $reservationTablesFinderService;
+
+    public function __construct(
+        ClientCreationServiceInterface $clientCreationService,
+        ReservationTablesFinderServiceInterface $reservationTablesFinderService
+    ) {
+        $this->clientCreationService = $clientCreationService;
+        $this->reservationTablesFinderService = $reservationTablesFinderService;
+    }
+
     public function createReservation(
         ReservationDto $reservation,
-        $restaurantId,
-    ) {
+        $restaurantId
+    ): mixed {
         $restaurant = Restaurant::findOrFail($restaurantId);
 
         // Handle date > now
         $reservationDateTime = Carbon::parse($reservation->reservationDate . ' ' . $reservation->reservationTime);
 
-        $reservationTablesIds = app(ReservationTablesFinderService::class)->findTablesForReservation(
-            $reservation->clients, 
+        $reservationTablesIds = $this->reservationTablesFinderService->findTablesForReservation(
+            $reservation->clients,
             $reservationDateTime,
             $restaurantId
         );
@@ -33,15 +44,18 @@ class ReservationCreationService
                 $reservation->reserverEmail,
                 $reservation->reserverPhone
             );
-            
-            $reserverId = app(ClientCreationService::class)->createClient($reserver, $restaurantId);
-            $reservationClientIds = app(ClientCreationService::class)->createClients($reservation->clients, $restaurantId);
-    
+
+            $reserverId = $this->clientCreationService->createClient($reserver, $restaurantId);
+            $reservationClientIds = $this->clientCreationService->createClients(
+                $reservation->clients,
+                $restaurantId
+            );
+
             $reservation = $restaurant->reservations()->create([
                 'reservation_time' => $reservationDateTime,
                 'reserver_client_id' => $reserverId
             ]);
-    
+
             $reservation->tables()->attach($reservationTablesIds);
             $reservation->clients()->attach($reservationClientIds);
 

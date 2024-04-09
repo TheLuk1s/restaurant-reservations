@@ -4,7 +4,8 @@ namespace App\Dto;
 
 use Illuminate\Http\Request;
 
-class ClientDto {
+class ClientDto
+{
     public function __construct(
         public readonly string $name,
         public readonly string $email,

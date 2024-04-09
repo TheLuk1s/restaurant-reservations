@@ -27,7 +27,7 @@ class RestaurantTableController extends Controller
             array_merge(
                 $request->all(),
                 ['restaurant_id' => $restaurantId]
-            ), 
+            ),
             Table::$validationRules
         );
 
@@ -52,7 +52,7 @@ class RestaurantTableController extends Controller
             array_merge(
                 $request->all(),
                 ['restaurant_id' => $restaurantId]
-            ), 
+            ),
             Table::$validationRules
         );
 

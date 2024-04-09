@@ -5,7 +5,8 @@ namespace App\Dto;
 use Illuminate\Http\Request;
 use App\Dto\ClientDto;
 
-class ReservationDto {
+class ReservationDto
+{
     public function __construct(
         public readonly string $reservationDate,
         public readonly string $reservationTime,

@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\Table;
 use App\Dto\ReservationDto;
-use Carbon\Carbon;
+use App\Interfaces\ReservationTablesFinderServiceInterface;
 
-class ReservationTablesFinderService
+class ReservationTablesFinderService implements ReservationTablesFinderServiceInterface
 {
-    const RESERVATION_TIME_IN_MINS = 119;
+    private const RESERVATION_TIME_IN_MINS = 119;
 
-    public function findTablesForReservation($clients, $dateTime, $restaurantId) : array
+    public function findTablesForReservation($clients, $dateTime, $restaurantId): array
     {
         $reservationTables = [];
 
@@ -42,15 +43,16 @@ class ReservationTablesFinderService
         return $reservationTables;
     }
 
-    protected function getAvailableTables($restaurantId, $reservationDateTime) {
+    protected function getAvailableTables($restaurantId, $reservationDateTime)
+    {
         return Table::where('restaurant_id', $restaurantId)
         ->whereDoesntHave('reservations', function ($query) use ($reservationDateTime) {
             $twoHoursBefore = $reservationDateTime->copy()->subMinutes(self::RESERVATION_TIME_IN_MINS);
             $twoHoursAfter = $reservationDateTime->copy()->addMinutes(self::RESERVATION_TIME_IN_MINS);
-    
+
             $query->whereBetween('reservation_time', [$twoHoursBefore, $twoHoursAfter]);
         })
-        ->orderBy('capacity', 'asc') 
+        ->orderBy('capacity', 'asc')
         ->get();
     }
 }

@@ -4,24 +4,25 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Dto\ClientDto;
+use App\Interfaces\ClientCreationServiceInterface;
 
-class ClientCreationService
+class ClientCreationService implements ClientCreationServiceInterface
 {
     public function createClients(
         array $clients
-    ) {
+    ) : array {
         $clientIds = [];
 
         foreach ($clients as $client) {
-            $clientIds[] = self::createClient($client);
+            $clientIds[] = $this->createClient($client);
         }
 
         return $clientIds;
     }
 
-    public static function createClient(
+    public function createClient(
         ClientDto $client
-    ) {
+    ) : int {
         $client = Client::firstOrCreate(
             [
                 'email' => $client->email

@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Dto\ReservationDto;
-use App\Models\Reservation;
 use App\Models\Restaurant;
-use App\Services\ReservationCreationService;
+use App\Models\Reservation;
+use App\Dto\ReservationDto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Services\ReservationCreationService;
+use App\Interfaces\ReservationCreationServiceInterface;
 
 class RestaurantReservationController extends Controller
 {
+    protected $reservationCreationService;
+
+    public function __construct(
+        ReservationCreationServiceInterface $reservationCreationService
+    ) {
+        $this->reservationCreationService = $reservationCreationService;
+    }
+
     public function index($restaurantId)
     {
         $restaurant = Restaurant::findOrFail($restaurantId);
@@ -35,7 +44,7 @@ class RestaurantReservationController extends Controller
             array_merge(
                 $request->all(),
                 ['restaurant_id' => $restaurantId]
-            ), 
+            ),
             Reservation::$validationRules
         );
 
@@ -45,10 +54,10 @@ class RestaurantReservationController extends Controller
                 422
             );
         }
- 
+
         $reservation = ReservationDto::fromRequest($request);
         $reservation = app(ReservationCreationService::class)->createReservation($reservation, $restaurantId);
-        
+
         if ($reservation) {
             return response()->json($reservation, 201);
         }
